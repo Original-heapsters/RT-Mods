@@ -63,12 +63,6 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
                     ModDevice device = personality.getModDevice();
                     onModDevice(device);
                     break;
-                case Personality.MSG_RAW_DATA:
-                    /** Mod raw data */
-                    byte[] buff = (byte[]) msg.obj;
-                    int length = msg.arg1;
-                    onRawData(buff, length);
-                    break;
                 case Personality.MSG_RAW_IO_READY:
                     /** Mod RAW I/O ready to use */
                     onRawInterfaceReady();
@@ -121,6 +115,9 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mgr.turnAllOn();
+                boolean temp = personality.getRaw().executeRaw(mgr.getCmd());
+                Toast.makeText(getApplicationContext(),"ExecuteCode: " + Arrays.toString(mgr.getCmd()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Data sent: " + temp,Toast.LENGTH_SHORT).show();
 
                 I2cTxt.setText("Command in human: " + mgr.getCmdString() + "\n\nCommand in computer: " + Arrays.toString(mgr.getCmd()));
             }
@@ -130,6 +127,9 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mgr.turnAllOff();
+                boolean temp = personality.getRaw().executeRaw(mgr.getCmd());
+                Toast.makeText(getApplicationContext(),"ExecuteCode: " + Arrays.toString(mgr.getCmd()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Data sent: " + temp,Toast.LENGTH_SHORT).show();
 
                 I2cTxt.setText("Command in human: " + mgr.getCmdString() + "\n\nCommand in computer: " + Arrays.toString(mgr.getCmd()));
             }
@@ -139,6 +139,9 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mgr.changeAllLEDs((Integer.parseInt(LEDColor.getText().toString())));
+                boolean temp = personality.getRaw().executeRaw(mgr.getCmd());
+                Toast.makeText(getApplicationContext(),"ExecuteCode: " + Arrays.toString(mgr.getCmd()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Data sent: " + temp,Toast.LENGTH_SHORT).show();
 
                 I2cTxt.setText("Command in human: " + mgr.getCmdString() + "\n\nCommand in computer: " + Arrays.toString(mgr.getCmd()));
             }
@@ -163,6 +166,31 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
 
         return doesSupport;
     }
+
+    //private boolean RefRaw()
+    //{
+    //     List<ModInterfaceDelegation> devices =
+    //            modManager.getModInterfaceDelegationsByProtocol(modDevice,
+    //                    ModProtocol.Protocol.RAW);
+    //    if (devices != null && !devices.isEmpty()) {
+    //        // TODO: go through the whole devices list for multi connected devices.
+    //        // Here simply operate the first device for this example.
+    //        ModInterfaceDelegation device = devices.get(0);
+
+    //        /**
+    //         * Be care to strict follow Android policy, you need visibly asking for
+    //         * grant permission.
+    //         */
+    //        if (getApplicationContext().checkSelfPermission(ModManager.PERMISSION_USE_RAW_PROTOCOL)
+    //                != PackageManager.PERMISSION_GRANTED) {
+    //            onRequestRawPermission();
+    //        } else {
+    //            /** The RAW_PROTOCOL permission already granted, open RAW I/O */
+    //            getRawPfd(device);
+    //            return true;
+    //        }
+    //    }
+   // }
 
     private void establishRAWComms() {
         Intent intent = new Intent(ModManager.ACTION_BIND_MANAGER);
@@ -248,7 +276,6 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
     /** Clean up MDK Personality interface */
     private void releasePersonality() {
         SharedPreferences preference = getSharedPreferences("recordingRaw", MODE_PRIVATE);
-        preference.edit().putBoolean("recordingRaw", false).commit();
 
         /** Clean up MDK Personality interface */
         if (null != personality) {
@@ -269,6 +296,9 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
          */
 
             if (null != device) {
+
+                Toast.makeText(getApplicationContext(),"Vendor:" + device.getVendorId()+ "\nProduct:" + device.getProductId(),Toast.LENGTH_LONG).show();
+
                 if ((device.getVendorId() == Constants.VID_MDK
                         && device.getProductId() == Constants.PID_TEMPERATURE)
                         || device.getVendorId() == Constants.VID_DEVELOPER) {
@@ -301,23 +331,6 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
             // Check MDK
             return device.getVendorId() == Constants.VID_MDK;
         }
-    }
-
-    /** Got data from mod device RAW I/O */
-    public void onRawData(byte[] buffer, int length) {
-        /** Parse raw data to header and payload */
-        int cmd = buffer[Constants.CMD_OFFSET] & ~Constants.TEMP_RAW_COMMAND_RESP_MASK & 0xFF;
-        int payloadLength = buffer[Constants.SIZE_OFFSET];
-
-        /** Checking the size of buffer we got to ensure sufficient bytes */
-        if (payloadLength + Constants.CMD_LENGTH + Constants.SIZE_LENGTH != length) {
-            return;
-        }
-
-        /** Parser payload data */
-        byte[] payload = new byte[payloadLength];
-        System.arraycopy(buffer, Constants.PAYLOAD_OFFSET, payload, 0, payloadLength);
-        parseResponse(cmd, payloadLength, payload);
     }
 
     /** RAW I/O of attached mod device is ready to use */

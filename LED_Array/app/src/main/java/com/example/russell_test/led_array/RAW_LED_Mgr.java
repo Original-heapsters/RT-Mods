@@ -37,7 +37,7 @@ public class RAW_LED_Mgr {
 
     public void turnAllOn()
     {
-        Arrays.fill( cmd, (byte) 255 );
+        Arrays.fill( cmd, (byte) 1 );
     }
 
     public void changeAllLEDs(int val)
