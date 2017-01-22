@@ -306,8 +306,9 @@ public class DetectRawIfaceActivity extends AppCompatActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            personality.getRaw().executeRaw(Constants.RAW_CMD_INFO);
+                            boolean temp = personality.getRaw().executeRaw(Constants.RAW_CMD_INFO);
                             Toast.makeText(getApplicationContext(),"ExecuteCode: " + Constants.RAW_CMD_INFO, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Data sent: " + temp,Toast.LENGTH_SHORT).show();
                         }
                     }, 5);
 

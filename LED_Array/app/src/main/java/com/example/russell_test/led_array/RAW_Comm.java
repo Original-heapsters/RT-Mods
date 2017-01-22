@@ -88,7 +88,7 @@ public class RAW_Comm extends Personality implements Personality.Raw {
     /**
      * The expected mod device PID / VID
      */
-    private int targetPID = 42;
+    private int targetPID = 66;
     private int targetVID = 1;
 
     /**
@@ -275,15 +275,15 @@ public class RAW_Comm extends Personality implements Personality.Raw {
         /**
          * Check whether expecting mod attached based on PID / VID.
          * For this example we ask for MDK Blinky.
-         */
-        if (targetPID != 1 && targetVID != 42) {
+
+        if (targetPID != 1 && targetVID != 66) {
             if (modDevice.getVendorId() != targetVID || modDevice.getProductId() != targetPID) {
 
                 return false;
 
             }
         }
-
+*/
         try {
             /** Query ModManager with RAW protocol */
             List<ModInterfaceDelegation> devices =
