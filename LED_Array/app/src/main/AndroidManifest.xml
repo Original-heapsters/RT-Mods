@@ -2,12 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.russell_test.led_array">
 
+    <uses-feature android:name="com.motorola.hardware.mods"/>
+    <uses-permission android:name="com.motorola.mod.permission.MOD_ACCESS_INFO" />
+    <uses-permission android:name="com.motorola.mod.permission.RAW_PROTOCOL" />
+
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.motorola.mod.version"
+            android:value="@integer/moto_mod_services_version" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -15,7 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FlashActivity"></activity>
+        <activity android:name=".FlashActivity" />
+        <activity android:name=".DetectRawIfaceActivity"></activity>
     </application>
 
 </manifest>
